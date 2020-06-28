@@ -11,7 +11,10 @@ class MenuModel extends Model
          $this->setTable('menu');
     }
 
-    public function updateOneByName($name, $data): int
+    /**
+     * 
+     */
+    public function updateOneByName(string $name, array $data): int
     {
         $needData = $this->getMenuByName($name);
         return $this->where('id', $needData['id'])->update($data);
@@ -36,8 +39,7 @@ class MenuModel extends Model
             }
         }
 
-        $menu['text'] = 'Nothing found';
-        return $menu;;
+        return $menu['text'] = 'Nothing found';
     }
 
     /**
@@ -46,14 +48,6 @@ class MenuModel extends Model
     public function getAllData(): object
     {
         return $this->all();
-    }
-
-    /** 
-     * 
-     */
-    public function updateData(): bool
-    {
-        return true;
     }
 
 }

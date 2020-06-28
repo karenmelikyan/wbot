@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>Варя</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
@@ -80,13 +80,13 @@
             @endif -->
 
             <div class="content">
-            <p> WatsApp Bot</p>
+            <p>WatsApp Bot</p>
                 <div class="title m-b-md">
                     "Варя"
                 </div>
 
                 <div class="links">
-                    <a href="{{ url('/admin') }}">Login</a>
+                    <a href="{{ url('/admin') }}">Войти</a>
                 </div>
             </div>
         </div>

@@ -2,28 +2,35 @@
 
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
+/*----------------------------------------------------------------
+| Home page
+|---------------------------------------------------------------*/
 Route::get('/', function () {
     return view('welcome');
 });
 
-/** Admin partition */
+
+/*----------------------------------------------------------------
+| Authentication
+|---------------------------------------------------------------*/
 Auth::routes();
 
+/*----------------------------------------------------------------
+| Admin controller
+|---------------------------------------------------------------*/
 Route::get('/admin', 'AdminController@index')->name('home');
-Route::get('/admin/edit', 'AdminController@show');
-Route::post('/admin/edit', 'AdminController@update');
+Route::get('/admin/edit_menu', 'AdminController@showMenu');
+Route::post('/admin/edit_menu', 'AdminController@updateMenu');
+Route::get('/admin/all_clients', 'AdminController@showAllClients');
+Route::get('/admin/edit_client', 'AdminController@showUpdateClient');
+Route::post('/admin/edit_client', 'AdminController@updateClient');
+Route::get('/admin/add_client', 'AdminController@showAddClient');
+Route::post('/admin/add_client', 'AdminController@addClient');
+Route::get('/admin/delete_client', 'AdminController@deleteClient');
 
 
-/** Watsapp bot partition */
+/*----------------------------------------------------------------
+| WBot controller
+|---------------------------------------------------------------*/
 Route::get('/webhook', 'WBotController@webhook');
+Route::get('/sender', 'WBotController@welcome');

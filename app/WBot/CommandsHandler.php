@@ -193,7 +193,7 @@ class CommandsHandler
      /**
      * get menu from db and send it by chatId
      */
-    public function sendMenu($chatId, $menuName)
+    private function sendMenu($chatId, $menuName)
     {
         $menu = new MenuModel();
         $menuText = $menu->getMenuByName($menuName);
@@ -240,27 +240,12 @@ class CommandsHandler
     */
     private function checkWebhook(string $webhookUrl): void
     {
-        $this->sendRequest('webhook', [
-            'set' => true,
-            'webhookUrl' => $webhookUrl,
-        ]);
+        // $this->sendRequest('webhook', [
+        //     'set' => true,
+        //     'webhookUrl' => $webhookUrl,
+        // ]);
     }
 
-    /**
-    * 
-    */
-    public function sendWelcome($chatId, $clientName): void
-    {
-        $message = "Добрый день " . $clientName . ", меня зовут Варя, я секретарь и помощник Пети.
-        Если вы не записаны на следующую тренировку, то можете это сделать командами.\n".
-
-        "0 - Открыть главное меню\n".
-        "1 - Запросить свободное время\n".
-        "2 - Перенести время тренировки\n".
-        "3 - Удалить все записи о будущих тренировках";
-
-        $this->sendMessage($chatId, $message);
-    }
      
     /*********************
     * Additional methods
