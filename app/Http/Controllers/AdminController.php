@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\MenuModel;
 use App\ClientModel;
+use App\Wbot\CommandsHandler;
 
 class AdminController extends Controller
 {
@@ -19,6 +20,49 @@ class AdminController extends Controller
         return view('home');
     }
 
+    /** send message to client */
+    public function welcome(Request $request)
+    {
+        $wbot = new CommandsHandler();
+        $client = new ClientModel();
+        $menu = new MenuModel();
+        $message = 'Приглашение отправлено';
+
+        if($clientArr = $client->getOneById($request['id'])){
+
+            //get main menu from db
+            $menuArr = $menu->getMenuByName('Главное меню');
+
+            //replace # on client name in menu text
+            $menuText = str_replace('#', $clientArr['name'], $menuArr['text']);
+
+            //remove `+` symbol if exist in phone nomber & concatenate chat id suffix
+            $chatId = str_replace('+', '', $clientArr['phone'] . '@c.us');
+
+            //send  main menu as welcome message
+            $wbot->sendMessage($chatId, $menuText);
+
+            //was sent the welcome so, welcome_amount atribute is increase
+            // $clientArr['welcome_amount'] = ++ $clientArr['welcome_amount'];
+
+            //update client cuz welcome_amount was updated
+            // $client->where('id', $request['id'])->update($clientArr);
+
+        }else{//if client 'id' don't exist
+            $message = 'Что то пошло не так, попытайтесь снова';
+        }
+
+        //get all clients from db & show them with message
+        $clientsArr = $client->getAllData();
+        if(is_array($clientsArr)){
+            return view('allClients', [
+                'clients' => $clientsArr,
+                'message' => $message,
+            ]);
+        }
+    }
+
+    /** delet client from db */
     public function deleteClient(Request $request)
     {
         $client = new ClientModel();
@@ -33,6 +77,7 @@ class AdminController extends Controller
     {
         $client = new ClientModel();
         if($dataArr = $client->updateOne($request)){
+
             return view('updateClient', [
                 'client'  => $dataArr,
                 'message' => 'Даные клиента обновлены!',
@@ -60,9 +105,9 @@ class AdminController extends Controller
     /** just show form of client`s add  */
     public function showAddClient()
     {
-       return view('addClient', [
+        return view('addClient', [
            'message' => null,
-       ]);
+        ]);
     }
 
     /** add client to db */

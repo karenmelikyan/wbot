@@ -25,8 +25,12 @@
                                     <td><?= $client['phone']; ?></td>
                                     <td><?= $client['welcome_amount']; ?></td>
                                     <td>
+                                        <a href="/admin/welcome?id={{$client['id']}}" >{{ 'пригласить' }}</a>
                                         <a href="/admin/edit_client?id={{$client['id']}}" >{{ 'редактировать' }}</a>
                                         <a href="/admin/delete_client?id={{$client['id']}}" >{{ 'удалить' }}</a>
+                                        <!-- <form method="post" action="/admin/message">
+                                           <button type="submit"class="">отправить приглашение</button>
+                                        </form> -->
                                     </td>
                                 </tr>
                             @endforeach

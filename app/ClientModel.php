@@ -38,12 +38,6 @@ class ClientModel extends Model
         $dataArr['phone'] = $request['phone'];
         $dataArr['welcome_amount'] = 0;
 
-        if($request['welcome_status'] === 'on'){
-            $dataArr['welcome_status'] = true;
-        }else{
-            $dataArr['welcome_status'] = false;
-        }
-
         return $this->insert($dataArr);
     }
 
@@ -56,13 +50,12 @@ class ClientModel extends Model
         $dataArr['name'] = $request['name'];
         $dataArr['last_name'] = $request['last_name'];
         $dataArr['phone'] = $request['phone'];
-        $dataArr['welcome_amount'] = 0;
 
-        if($request['welcome_status'] === 'on'){
-            $dataArr['welcome_status'] = true;
-        }else{
-            $dataArr['welcome_status'] = false;
-        }
+        //data about sent messages shouldn't 
+        //change & must be save as statistic data
+        $client = new ClientModel();
+        $oldData = $client->getOneById($request['id']);
+        $dataArr['welcome_amount'] = $oldData['welcome_amount'];
 
         if($this->where('id', $request['id'])->update($dataArr)){
             return $dataArr;
@@ -85,7 +78,29 @@ class ClientModel extends Model
                 $client['name']  = $item['name'];
                 $client['last_name'] = $item['last_name'];
                 $client['phone'] = $item['phone'];
-                $client['welcome_status'] = $item['welcome_status'];
+                $client['welcome_amount'] = $item['welcome_amount'];
+     
+                return $client;
+            }
+        }
+
+        return null;
+    }
+
+     /**
+     * 
+     */
+    public function getOneByPhone(int $phone): ?array
+    {
+        $data = $this->where('id', $phone)->get();
+        $client = [];
+
+        if($data){
+            foreach($data as $item){
+                $client['id'] = $item['id'];
+                $client['name']  = $item['name'];
+                $client['last_name'] = $item['last_name'];
+                $client['phone'] = $item['phone'];
                 $client['welcome_amount'] = $item['welcome_amount'];
      
                 return $client;
@@ -109,7 +124,6 @@ class ClientModel extends Model
             $clientsArr[$index]['name'] = $item['name'];
             $clientsArr[$index]['last_name'] = $item['last_name'];
             $clientsArr[$index]['phone'] = $item['phone'];
-            $clientsArr[$index]['welcome_status'] = $item['welcome_status'];
             $clientsArr[$index]['welcome_amount'] = $item['welcome_amount'];
             $index ++;
         }

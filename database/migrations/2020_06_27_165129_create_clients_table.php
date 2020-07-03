@@ -19,7 +19,6 @@ class CreateClientsTable extends Migration
             $table->string('name');
             $table->string('last_name');
             $table->string('phone');
-            $table->boolean('welcome_status');
             $table->integer('welcome_amount');
             $table->timestamps();
         });

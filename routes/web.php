@@ -27,10 +27,9 @@ Route::post('/admin/edit_client', 'AdminController@updateClient');
 Route::get('/admin/add_client', 'AdminController@showAddClient');
 Route::post('/admin/add_client', 'AdminController@addClient');
 Route::get('/admin/delete_client', 'AdminController@deleteClient');
-
+Route::get('/admin/welcome', 'AdminController@welcome');
 
 /*----------------------------------------------------------------
-| WBot controller
+| Watsapp bot controller
 |---------------------------------------------------------------*/
 Route::get('/webhook', 'WBotController@webhook');
-Route::get('/sender', 'WBotController@welcome');

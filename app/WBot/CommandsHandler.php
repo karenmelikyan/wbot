@@ -4,29 +4,23 @@ namespace App\Wbot;
 use App\MenuModel;
 
 class CommandsHandler
-{
-    private string $apiUrl;
-    private string $token;
+{                
+    private $apiUrl = 'https://eu148.chat-api.com/instance145052/';
+    private $token  = 'vizyz14q056uegj5';
 
-    public function __construct($apiUrl, $token)
-    {
-       $this->apiUrl = $apiUrl;
-       $this->token  = $token;
-    }
-   
     public function run($json)
     {
         if($chatId = $this->getChatId($json)){
-            if($json = $this->getLastMessages($chatId, 10)){
-                if($menuHandler = $this->getMenuHandler($json)){
-                    if($command = $this->getLastCommand($json)){
+            if($jsonLastMessages = $this->getLastMessages($chatId, 30)){
+                if($menuHandler = $this->getMenuHandler($jsonLastMessages)){
+                    if($command = $this->getLastCommand($jsonLastMessages)){
                         // invoke appropriate method by 
-                        // value in variable `$menuIdentif`
-                        $this->$menuHandler($chatId, $command); 
+                        // value in variable `$menuHandler`
+                        $this->$menuHandler($chatId, $command);
                     }
                 }
             }
-        }
+        } 
     }
 
     /*******************
@@ -34,17 +28,17 @@ class CommandsHandler
     ********************/
     private function mainMenuHandler($chatId, $command)
     {
-        switch($command)
-        {
-            case '0': $this->sendMenu($chatId, 'Главное меню');
-            break;
-            case '1': $this->sendMenu($chatId, 'Выберите свободный день');
-            break;
-            case '2': $this->sendMenu($chatId, '');
-            break;
-            case '3': $this->sendMenu($chatId, '');
-            break;   
-        }
+        // switch($command)
+        // {
+        //     case 'zero':   return $command . '0 sent';   //$this->sendMenu($chatId, 'Главное меню');
+        //     break;
+        //     case '1': return $command . ' sent';     /// $this->sendMenu($chatId, 'Выберите свободный день');
+        //     break;
+        //     case '2': $this->sendMenu($chatId, '');
+        //     break;
+        //     case '3': $this->sendMenu($chatId, '');
+        //     break;   
+        // }
     }
 
     /**
@@ -114,7 +108,7 @@ class CommandsHandler
         /** search for menu`s keywords in array of messages */
         foreach($decoded as $item){
             if($item['fromMe']){//checking only messages sent from me
-                if(strripos($item['body'], 'Главное меню')){
+                if(strripos($item['body'], 'Открыть главное меню')){
                     return 'mainMenuHandler';
                 }
         
@@ -143,14 +137,15 @@ class CommandsHandler
     {
         $decoded = json_decode($json, true);
 
-        /** reverse array for find last sent command */
+        /** reverse array for find last sent menu */
         $decoded = array_reverse($decoded['messages']);
 
         /** search for command in array of messages */
         foreach($decoded as $item){
             if(!$item['fromMe']){//checking only messages sent from client
-                return $item['body'];
-            }
+                $command = mb_strtolower($item['body']);
+                return str_replace('0', 'zero', $command);// replace '0' to 'zero' cuz there may be problems                                                          
+            }                                             // with compare data in if operator
         }
 
         $this->error_log('Can`t get last command');
@@ -162,7 +157,7 @@ class CommandsHandler
     */
     private function getLastMessages($chatId, $limit): ?string
     {
-        $url = $this->apiUrl . 'messages?token=' . $this->token . '&chatId=' . $chatId . '&limit=' . $limit;
+        $url = $this->apiUrl . 'messages?token=' . $this->token . '&chatId=' . $chatId . '&last=' . $limit . '&limit=' . $limit;
         if($json = file_get_contents($url)){
             return $json;
         }
@@ -193,18 +188,18 @@ class CommandsHandler
      /**
      * get menu from db and send it by chatId
      */
-    private function sendMenu($chatId, $menuName)
+    public function sendMenuByName($chatId, $menuName): void
     {
         $menu = new MenuModel();
-        $menuText = $menu->getMenuByName($menuName);
+        $menuArr = $menu->getMenuByName($menuName);
     
-        $this->sendMessage($chatId, $menuText);
+        $this->sendMessage($chatId, $menuArr['menu_name']);
     }
 
     /**
     * 
     */
-    private function sendMessage(string $chatId, string $text): void
+    public function sendMessage(string $chatId, string $text): void
     {
         $data = [
             'chatId' => $chatId,
@@ -271,3 +266,14 @@ class CommandsHandler
 
 }
 
+ /** Waiting for client`s command */
+ //$json = file_get_contents('php://input');
+
+ //$menu = new MenuModel();
+ //$arr = $menu->getMenuByName('Главное меню');
+
+ //var_dump($arr);
+           
+ /** Turn on commands handling */
+ //(new CommandsHandler())->run($json);
+    
