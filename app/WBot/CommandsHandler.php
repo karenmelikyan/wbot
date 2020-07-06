@@ -1,21 +1,26 @@
 <?php
 
 namespace App\Wbot;
-use App\MenuModel;
 
 class CommandsHandler
 {                
     private $apiUrl = 'https://eu148.chat-api.com/instance145052/';
     private $token  = 'vizyz14q056uegj5';
+    private $client;
+    private $menu;
+
+    public function __construct($menu, $client)
+    {
+       $this->menu = $menu;
+       $this->client = $client;
+    }
 
     public function run($json)
     {
         if($chatId = $this->getChatId($json)){
-            if($jsonLastMessages = $this->getLastMessages($chatId, 30)){
+            if($jsonLastMessages = $this->getLastMessages($chatId, 10)){
                 if($menuHandler = $this->getMenuHandler($jsonLastMessages)){
                     if($command = $this->getLastCommand($jsonLastMessages)){
-                        // invoke appropriate method by 
-                        // value in variable `$menuHandler`
                         $this->$menuHandler($chatId, $command);
                     }
                 }
@@ -28,17 +33,17 @@ class CommandsHandler
     ********************/
     private function mainMenuHandler($chatId, $command)
     {
-        // switch($command)
-        // {
-        //     case 'zero':   return $command . '0 sent';   //$this->sendMenu($chatId, 'Главное меню');
-        //     break;
-        //     case '1': return $command . ' sent';     /// $this->sendMenu($chatId, 'Выберите свободный день');
-        //     break;
-        //     case '2': $this->sendMenu($chatId, '');
-        //     break;
-        //     case '3': $this->sendMenu($chatId, '');
-        //     break;   
-        // }
+        switch($command)
+        {
+            case 'zero': $this->sendMenuByName($chatId, 'Главное меню');
+            break;
+            case '1': $this->sendMenuByName($chatId, 'Запросить свободное время');
+            break;
+            case '2': $this->sendMenuByName($chatId, 'Выберите подходящее время:');
+            break;
+            case '3': $this->sendMenuByName($chatId, '');
+            break;   
+        }
     }
 
     /**
@@ -84,6 +89,20 @@ class CommandsHandler
     /**
     * 
     */
+    private function areYouSure($chatId, $command)
+    {
+        switch($command)
+        {
+            case '1': ;
+            break;
+            case '2': ;
+            break;
+        }
+    }
+
+    /**
+    * 
+    */
     private function cancelMenuHandler($chatId, $command)
     {
         switch($command)
@@ -111,7 +130,7 @@ class CommandsHandler
                 if(strripos($item['body'], 'Открыть главное меню')){
                     return 'mainMenuHandler';
                 }
-        
+                
                 if(strripos($item['body'], 'свободный день')){
                     return 'freeDaysMenuHandler';
                 }
@@ -185,15 +204,29 @@ class CommandsHandler
         return null;
     }
 
-     /**
-     * get menu from db and send it by chatId
-     */
+    /**
+    * get menu from db and send it by chatId
+    */
     public function sendMenuByName($chatId, $menuName): void
     {
-        $menu = new MenuModel();
-        $menuArr = $menu->getMenuByName($menuName);
-    
-        $this->sendMessage($chatId, $menuArr['menu_name']);
+        //get phone from `chatId`
+        $phone = str_replace('@c.us', '', $chatId);
+
+        if($clientArr = $this->client->getOneByPhone($phone))
+        {
+            //get main menu from db
+            $menuArr = $this->menu->getMenuByName($menuName);
+
+            //replace # on client name in menu text
+            $menuText = str_replace('#', $clientArr['name'], $menuArr['text']);
+
+            //remove `+` symbol if exist in phone nomber & concatenate chat id suffix
+            $chatId = str_replace('+', '', $clientArr['phone'] . '@c.us');
+
+            //send  main menu as welcome message
+            $this->sendMessage($chatId, $menuText);
+        }
+
     }
 
     /**
@@ -241,7 +274,6 @@ class CommandsHandler
         // ]);
     }
 
-     
     /*********************
     * Additional methods
     *********************/
@@ -266,14 +298,3 @@ class CommandsHandler
 
 }
 
- /** Waiting for client`s command */
- //$json = file_get_contents('php://input');
-
- //$menu = new MenuModel();
- //$arr = $menu->getMenuByName('Главное меню');
-
- //var_dump($arr);
-           
- /** Turn on commands handling */
- //(new CommandsHandler())->run($json);
-    

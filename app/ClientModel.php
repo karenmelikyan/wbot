@@ -90,9 +90,9 @@ class ClientModel extends Model
      /**
      * 
      */
-    public function getOneByPhone(int $phone): ?array
+    public function getOneByPhone($phone): ?array
     {
-        $data = $this->where('id', $phone)->get();
+        $data = $this->where('phone', $phone)->get();
         $client = [];
 
         if($data){

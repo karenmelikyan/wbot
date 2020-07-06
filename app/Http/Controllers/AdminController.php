@@ -23,7 +23,7 @@ class AdminController extends Controller
     /** send message to client */
     public function welcome(Request $request)
     {
-        $wbot = new CommandsHandler();
+        $wbot = new CommandsHandler(new MenuModel(), new ClientModel());
         $client = new ClientModel();
         $menu = new MenuModel();
         $message = 'Приглашение отправлено';
@@ -43,10 +43,10 @@ class AdminController extends Controller
             $wbot->sendMessage($chatId, $menuText);
 
             //was sent the welcome so, welcome_amount atribute is increase
-            // $clientArr['welcome_amount'] = ++ $clientArr['welcome_amount'];
+            $clientArr['welcome_amount'] = ++ $clientArr['welcome_amount'];
 
             //update client cuz welcome_amount was updated
-            // $client->where('id', $request['id'])->update($clientArr);
+            $client->where('id', $request['id'])->update($clientArr);
 
         }else{//if client 'id' don't exist
             $message = 'Что то пошло не так, попытайтесь снова';

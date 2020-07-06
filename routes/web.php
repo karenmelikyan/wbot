@@ -32,4 +32,5 @@ Route::get('/admin/welcome', 'AdminController@welcome');
 /*----------------------------------------------------------------
 | Watsapp bot controller
 |---------------------------------------------------------------*/
+Route::post('/webhook', 'WBotController@webhook');
 Route::get('/webhook', 'WBotController@webhook');
